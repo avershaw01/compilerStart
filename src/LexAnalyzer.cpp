@@ -1,14 +1,13 @@
-// ANDRE VERSHAW, Independent work
+// Group 7) Joseph Barron, Gianna Martinez, Derek Schober, Andre Vershaw
 #include "LexAnalyzer.h"
 
 
 /*
- * What I could probably do better:
- * Use private methods to clean up scanFile method
- * I could also probably read in the file more efficiently than opening it for every char...
- * I also don't print an error message to the output file
- * AND it only prints to the output file if EVERYTHING is read in correctly (I know it should still write up until the error)
- * Could also probably use a contains method rather than a count for matching lexeme to tokenmap
+ * Our objectives:
+ * Change code to read line by line
+ * When hitting an unknown symbol, write to output file UP TO the symbol, then throw error message
+ * Fix identifiers so they check the space before and after them to make sure it's valid
+ * Modularize with private methods to clean up scanFile method
  */
 
 LexAnalyzer::LexAnalyzer(istream& infile) {
