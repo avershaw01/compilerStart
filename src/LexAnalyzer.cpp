@@ -83,6 +83,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
             // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
             else if (isalpha(ch)) {
+                cout << "in isalpha" << endl;
                 // Variables cannot start with a number
                 lexeme += ch;
 
@@ -92,7 +93,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
                     lexeme += ch;
                 }
 
-                if (tokenmap.count(lexeme)) {
+                if (tokenmap.contains(lexeme)) {
                     tokens.push_back(tokenmap[lexeme]); // If the lexeme matches a defined token, pushes that token
                 } else {
                     tokens.push_back("t_id"); // Else, lexeme is an identifier (variable name)
@@ -103,19 +104,21 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
             // Checking for STRINGS (double quotes)
             else if (ch == '"') {
+                cout << "in isstring" << endl;
                 // setting to non " so will pass while loop conditional
                 ch = '_';
                 // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
                 while (ch != '"') {
                     // Continues until closing "
                     if (i < line.length())
-                        ch = line[i];
+                        ch = line[i++];
                     else {
                         std::getline(infile, line);
                         i = 0;
                         ch = line[i];
                     }
                     lexeme += ch;
+                    ch = line[i];
                 }
                 if (ch == '"') {
                     tokens.push_back("t_text");
