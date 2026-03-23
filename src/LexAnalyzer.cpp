@@ -15,7 +15,7 @@
 // Each pair appears on its own input line.
 // post: tokenmap has been populated - key: lexeme, value: token
 
-LexAnalyzer::LexAnalyzer(istream& infile) {
+LexAnalyzer::LexAnalyzer(istream &infile) {
     // CONSTRUCTOR
 
     // Build tokenmap from the infile given.
@@ -45,102 +45,116 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
 // If there is an error, the incomplete token/lexeme pairs, as well as
 // an error message have been written to the output file.
 // A success or fail message has printed to the console.
-void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
+void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     // Reads through source infile (code to compile), builds output file using tokenmap,
     /*
      *lexemes.push_back(...)
      *tokens.push_back(...)
      */
 
-    // Instantiates temp char variable 'ch'
-    char ch;
-
     // While loops through input file source.txt
-    while (infile.get(ch)) {
-        // Instantiates temp variable to hold the lexeme
-        string lexeme;
+    string line;
+    while (std::getline(infile, line)) {
+        int i = 0;
+        int z = line.length();
 
-        // Ignores whitespace
-        if (isspace(ch)) continue;
+        while (i < line.length()) {
+            // Instantiates temp variable to hold the lexeme
+            string lexeme;
+            char ch = line[i++];
 
-        // Checks NUMBERS first:
-        if (isdigit(ch)) {
-            lexeme += ch;
-            // Uses infile.peek() to group numbers together
-            while (isdigit(infile.peek())) {
-                infile.get(ch);
+            // Ignores whitespace
+            if (isspace(ch)) continue;
+
+            // Checks NUMBERS first:
+            if (isdigit(ch)) {
                 lexeme += ch;
-            }
-
-            // Adds to parallel vectors:
-            tokens.push_back("t_number");
-            lexemes.push_back(lexeme);
-            continue;
-        }
-
-        // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
-        else if (isalpha(ch)) {
-            // Variables cannot start with a number
-            lexeme += ch;
-
-            // isalnum returns true if the char is a number OR letter
-            while (isalnum(infile.peek()) || infile.peek() == '_') {
-                infile.get(ch); // Reads next char, stores it in ch, moves reader to the next char.
-                lexeme += ch;
-            }
-
-            if (tokenmap.count(lexeme)) {
-                tokens.push_back(tokenmap[lexeme]); // If the lexeme matches a defined token, pushes that token
-            }
-            else {
-                tokens.push_back("t_id"); // Else, lexeme is an identifier (variable name)
-            }
-            lexemes.push_back(lexeme);
-            continue;
-        }
-
-        // Checking for STRINGS (double quotes)
-        else if (ch == '"') {
-            // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
-            while (infile.peek() != '"') { // Continues until closing "
-                infile.get(ch);
-                lexeme += ch;
-            }
-            if (infile.peek() == '"') {
-                infile.get(ch);
-                tokens.push_back("t_text");
-                lexemes.push_back(lexeme);
-            }
-            else {
-                cout << "Failed to define STRING" << endl; // String is never closed
-                return;
-            }
-        }
-
-        // SYMBOLS
-        else {
-            lexeme += ch;
-
-            if (infile.peek() != EOF) { // End of File
-                char tempNext = infile.peek();
-                string twoChars = lexeme + tempNext; // twoChars variable is used to see if the pair is a valid symbol
-
-                if (tokenmap.count(twoChars)) {
+                // Uses infile.peek() to group numbers together
+                while (isdigit(infile.peek())) {
                     infile.get(ch);
-                    lexeme = twoChars;
+                    lexeme += ch;
                 }
-            }
-            if (tokenmap.count(lexeme)) {
-                tokens.push_back(tokenmap[lexeme]);
-                lexemes.push_back(lexeme);
-            }
-            else { // This should only run if the compiler reaches an unknown symbol
-                // All other cases; letters, numbers, and valid symbols; should continue; (skips to next iteration)
-                cout << "ERROR -> Unknown Symbol" << endl;
 
-                // DEBUG to print to console what symbol broke the lexeme analyzer:
-                cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
-                return;
+                // Adds to parallel vectors:
+                tokens.push_back("t_number");
+                lexemes.push_back(lexeme);
+                continue;
+            }
+
+            // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
+            else if (isalpha(ch)) {
+                // Variables cannot start with a number
+                lexeme += ch;
+
+                // isalnum returns true if the char is a number OR letter
+                while (isalnum(infile.peek()) || infile.peek() == '_') {
+                    infile.get(ch); // Reads next char, stores it in ch, moves reader to the next char.
+                    lexeme += ch;
+                }
+
+                if (tokenmap.count(lexeme)) {
+                    tokens.push_back(tokenmap[lexeme]); // If the lexeme matches a defined token, pushes that token
+                } else {
+                    tokens.push_back("t_id"); // Else, lexeme is an identifier (variable name)
+                }
+                lexemes.push_back(lexeme);
+                continue;
+            }
+
+            // Checking for STRINGS (double quotes)
+            else if (ch == '"') {
+                // setting to non " so will pass while loop conditional
+                ch = '_';
+                // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
+                while (ch != '"') {
+                    // Continues until closing "
+                    if (i < line.length())
+                        ch = line[i];
+                    else {
+                        std::getline(infile, line);
+                        i = 0;
+                        ch = line[i];
+                    }
+                    lexeme += ch;
+                }
+                if (ch == '"') {
+                    tokens.push_back("t_text");
+                    lexemes.push_back(lexeme);
+                    i++;
+                } else {
+                    cout << "Failed to define STRING" << endl; // String is never closed
+                    return;
+                }
+
+            }
+
+            // SYMBOLS
+            else {
+                lexeme += ch;
+
+                if (infile.peek() != EOF) {
+                    // End of File
+                    char tempNext = infile.peek();
+                    string twoChars = lexeme + tempNext;
+                    // twoChars variable is used to see if the pair is a valid symbol
+
+                    if (tokenmap.count(twoChars)) {
+                        infile.get(ch);
+                        lexeme = twoChars;
+                    }
+                }
+                if (tokenmap.count(lexeme)) {
+                    tokens.push_back(tokenmap[lexeme]);
+                    lexemes.push_back(lexeme);
+                } else {
+                    // This should only run if the compiler reaches an unknown symbol
+                    // All other cases; letters, numbers, and valid symbols; should continue; (skips to next iteration)
+                    cout << "ERROR -> Unknown Symbol" << endl;
+
+                    // DEBUG to print to console what symbol broke the lexeme analyzer:
+                    cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
+                    return;
+                }
             }
         }
     }
