@@ -8,6 +8,14 @@
  * When hitting an unknown symbol, write to output file UP TO the symbol, then throw error message
  * Fix identifiers so they check the space before and after them to make sure it's valid
  * Modularize with private methods to clean up scanFile method
+ * Write a bunch of tests (independent)
+ */
+
+/*
+ * Other notes:
+ * Do not use string stream
+ * Do not test that it's a valid open file
+ * Do not use while(true)
  */
 
 // pre: parameter refers to open data file consisting of token and
