@@ -62,9 +62,11 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
 
     // Instantiates temp char variable 'ch'
     char ch;
+    bool errorFlag = false;
+
 
     // While loops through input file source.txt
-    while (infile.get(ch)) {
+    while (infile.get(ch) && !errorFlag) {
         // Instantiates temp variable to hold the lexeme
         string lexeme;
 
@@ -101,6 +103,7 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                 tokens.push_back(tokenmap[lexeme]); // If the lexeme matches a defined token, pushes that token
             }
             else {
+                // if (string[i-1] == whitespace || symbol) && (string[i+1] == whitespace || symbol)
                 tokens.push_back("t_id"); // Else, lexeme is an identifier (variable name)
             }
             lexemes.push_back(lexeme);
@@ -148,7 +151,7 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
 
                 // DEBUG to print to console what symbol broke the lexeme analyzer:
                 cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
-                return;
+                errorFlag = true;
             }
         }
     }
