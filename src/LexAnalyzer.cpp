@@ -23,6 +23,12 @@ void LexAnalyzer::UpdateVectors(string lexems, string token) {
     lexemes.push_back(lexems);
 }
 
+void LexAnalyzer::PrintToOutput(ostream &outfile) const {
+    for (size_t i = 0; i < tokens.size(); i++) {
+        outfile << tokens[i] << " " << lexemes[i] << endl;
+    }
+}
+
 void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
     char ch;
     while (infile.get(ch)) {
@@ -91,8 +97,6 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
             }
         }
     }
-    for (size_t i = 0; i < tokens.size(); i++) {
-        outfile << tokens[i] << " " << lexemes[i] << endl;
-    }
+    PrintToOutput(outfile);
     cout << "It runs!" << endl;
 }

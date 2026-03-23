@@ -20,7 +20,7 @@ class LexAnalyzer {
 
         // other private methods
     void UpdateVectors(string key, string token);
-
+    void PrintToOutput(ostream& outfile) const;
     public:
         LexAnalyzer(istream& infile);
         // pre: parameter refers to open data file consisting of token and
