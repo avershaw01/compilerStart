@@ -128,7 +128,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
                     i++;
                     if (i < line.length() && isalnum(line[i])) {
                         errorFlag = true;
-                        errorMsg = "Unexpected character: \n" + line;
+                        errorMsg = "Unexpected character: " + line;
                     }
                 } else {
                     cout << "Failed to define STRING" << endl; // String is never closed
