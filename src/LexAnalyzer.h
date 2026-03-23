@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 using namespace std;
-
 class LexAnalyzer {
     private:
         // map to hold language's valid lexeme/token pairs
@@ -20,6 +19,7 @@ class LexAnalyzer {
         vector<string> tokens;
 
         // other private methods
+    void UpdateVectors(string key, string token);
 
     public:
         LexAnalyzer(istream& infile);
