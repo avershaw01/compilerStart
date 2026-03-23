@@ -54,11 +54,13 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
     // While loops through input file source.txt
     string line;
+    bool errorFlag = false;
+    string errorMsg;
+
     while (std::getline(infile, line)) {
         int i = 0;
-        int z = line.length();
 
-        while (i < line.length()) {
+        while (i < line.length() && !errorFlag) {
             // Instantiates temp variable to hold the lexeme
             string lexeme;
             char ch = line[i++];
@@ -124,9 +126,14 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
                     tokens.push_back("t_text");
                     lexemes.push_back(lexeme);
                     i++;
+                    if (i < line.length() && isalnum(line[i])) {
+                        errorFlag = true;
+                        errorMsg = "Unexpected character: \n" + line;
+                    }
                 } else {
                     cout << "Failed to define STRING" << endl; // String is never closed
-                    return;
+                    errorFlag = true;
+                    errorMsg = "THE SYMBOL IN QUESTION: " + lexeme;
                 }
 
             }
@@ -156,7 +163,9 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
                     // DEBUG to print to console what symbol broke the lexeme analyzer:
                     cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
-                    return;
+                    errorFlag = true;
+                    errorMsg = "THE SYMBOL IN QUESTION: " + lexeme;
+
                 }
             }
         }
@@ -164,6 +173,9 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     // If no errors ran return; pushes to output file what was read (using the parallel vectors)
     for (size_t i = 0; i < tokens.size(); i++) {
         outfile << tokens[i] << " " << lexemes[i] << endl;
+        if (errorFlag) {
+            outfile << errorMsg << endl;
+        }
     }
     cout << "It runs!" << endl; // DEBUG to console, ensures this section ran.
 }
