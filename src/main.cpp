@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
     ifstream lexemes("../lexemes.txt");
-    ifstream source("../andreTest.txt");
+    ifstream source("../source.txt");
     ofstream sourcelexemes("../sourcelexemes.txt");
     LexAnalyzer lexanalyzer(lexemes);
     lexanalyzer.scanFile(source, sourcelexemes);

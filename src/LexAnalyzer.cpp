@@ -107,7 +107,7 @@ void LexAnalyzer::CheckString(int& i, string &line, string &lexeme, bool &errorF
 
     }
     UpdateVectors(lexeme, "t_text");
-    if (i < line.length() && isalnum(line[i])) {
+    if (i + 1 < line.length() && (isalnum(line[i + 1]) || line[i + 1] == '_')) {
         errorFlag = true;
         errorMsg = "Unexpected character: " + line;
     }
