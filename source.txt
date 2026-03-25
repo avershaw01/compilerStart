@@ -3,4 +3,7 @@
 >
 integer
 string
-int
+int==
+""
+bool
+123123error

@@ -5,3 +5,8 @@ s_greater >
 t_integer integer
 t_string string
 t_id int
+s_equal ==
+t_text 
+t_id bool
+t_number 123123
+t_id error

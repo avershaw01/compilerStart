@@ -75,42 +75,43 @@ void LexAnalyzer::CheckIDandKeyWords(int& i, string &line, string &lexeme, bool 
     }
 }
 void LexAnalyzer::CheckString(int& i, string &line, string &lexeme, bool &errorFlag, string &errorMsg, istream &infile) {
-    // checking for " midword
     char ch;
     if (i > 0 && isalnum(line[i-1])) {
         errorFlag = true;
         errorMsg = "UNEXPECTED QUOTATION: " + line;
+        return;
     }
-    // setting to non " so will pass while loop conditional
+
     ch = '_';
-    bool complete = false;
-    // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
     i++;
+
     while (ch != '"') {
-        // Continues until closing "
-        if (i < line.length())
+        if (i < line.length()) {
             ch = line[i];
+        }
         else {
             std::getline(infile, line);
             i = 0;
+            if (line.empty()) {
+                lexeme += '\n';
+                continue;
+            }
+
             ch = line[i];
+        }
+
+        if (ch != '"') {
+            lexeme += ch;
             i++;
         }
-        lexeme += ch;
-        ch = line[++i];
-    }
-    if (ch == '"') {
-        UpdateVectors(lexeme, "t_text");
-        if (i+1 < line.length() && isalnum(line[i+1])) {
-            errorFlag = true;
-            errorMsg = "Unexpected character: " + line;
-        }
-    } else {
-        cout << "Failed to define STRING" << endl; // String is never closed
-        errorFlag = true;
-        errorMsg = "THE SYMBOL IN QUESTION: " + lexeme;
-    }
 
+
+    }
+    UpdateVectors(lexeme, "t_text");
+    if (i < line.length() && isalnum(line[i])) {
+        errorFlag = true;
+        errorMsg = "Unexpected character: " + line;
+    }
 }
 void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     // While loops through input file source.txt
@@ -134,6 +135,10 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
             if (isdigit(ch)) {
                 lexeme += ch;
                 while (i < line.length() && isdigit(line[i+1])) {
+                    if (isalpha(line[i+1]) || line[i+1] == '_') {
+                        errorFlag = true;
+                        errorMsg = "No Delimiter Between number and words: " + line;
+                    }
                     lexeme += line[++i];
                 }
                 UpdateVectors(lexeme, "t_number");
