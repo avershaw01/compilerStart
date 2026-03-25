@@ -59,7 +59,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     while (std::getline(infile, line)) {
         int length = line.length();
         int i = -1;
-        while ((i++ < (int) line.length()) && !errorFlag) {
+        while ((++i < (int) line.length()) && !errorFlag) {
             // Instantiates temp variable to hold the lexeme
             string lexeme;
             char ch = line[i];
@@ -72,9 +72,8 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
             if (isdigit(ch)) {
                 lexeme += ch;
                 // Uses infile.peek() to group numbers together
-                while (isdigit(infile.peek())) {
-                    infile.get(ch);
-                    lexeme += ch;
+                while (i < line.length() && isdigit(line[i+1])) {
+                    lexeme += line[++i];
                 }
 
                 // Adds to parallel vectors:
@@ -84,13 +83,13 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
             }
 
             // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
-            else if (isalpha(ch)) {
+            else if (isalpha(ch) || ch == '_') {
                 // Variables cannot start with a number
                 lexeme += ch;
 
                 // isalnum returns true if the char is a number OR letter
-                while (i < line.length() && ( isalnum(line[i]) || line[i] == '_')) {
-                    ch = line[i++];
+                while (i < line.length() && ( isalnum(line[i+1]) || line[i+1] == '_')) {
+                    ch = line[++i];
                     lexeme += ch;
                 }
 
@@ -114,18 +113,21 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
                 // setting to non " so will pass while loop conditional
                 ch = '_';
+                bool complete = false;
                 // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
+                i++;
                 while (ch != '"') {
                     // Continues until closing "
                     if (i < line.length())
-                        ch = line[i++];
+                        ch = line[i];
                     else {
                         std::getline(infile, line);
                         i = 0;
                         ch = line[i];
+                        i++;
                     }
                     lexeme += ch;
-                    ch = line[i];
+                    ch = line[++i];
                 }
                 if (ch == '"') {
                     tokens.push_back("t_text");
@@ -149,7 +151,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
                 if (i + 1 < line.length()) {
                     // End of File
-                    string twoChars = lexeme + line[++i];
+                    string twoChars = lexeme + line[i + 1];
                     // twoChars variable is used to see if the pair is a valid symbol
 
                     if (tokenmap.count(twoChars)) {
