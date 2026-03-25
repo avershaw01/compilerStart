@@ -52,10 +52,10 @@ void LexAnalyzer::CheckSymbols(int &i, string &line, string &lexeme, bool &error
     } else {
         // This should only run if the compiler reaches an unknown symbol
         // All other cases; letters, numbers, and valid symbols; should continue; (skips to next iteration)
-        cout << "ERROR -> Unknown Symbol" << endl;
+        // cout << "ERROR -> Unknown Symbol" << endl;
 
         // DEBUG to print to console what symbol broke the lexeme analyzer:
-        cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
+        // cout << "THE SYMBOL IN QUESTION: " << lexeme << endl;
         errorFlag = true;
         errorMsg = "THE SYMBOL IN QUESTION: " + lexeme;
     }
@@ -118,7 +118,7 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     bool errorFlag = false;
     string errorMsg;
 
-    while (std::getline(infile, line)) {
+    while (getline(infile, line)) {
         int length = line.length();
         int i = -1;
         while ((++i < length) && !errorFlag) {
@@ -168,5 +168,5 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     if (!errorFlag)
         cout << "It runs!" << endl; // DEBUG to console, ensures this section ran.
     else
-        cout << "Error -- " <<errorMsg << endl;
+        cout << "Error -- " << errorMsg << endl;
 }
