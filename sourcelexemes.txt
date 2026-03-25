@@ -1,1 +1,7 @@
 t_text hello world
+s_semi ;
+s_lesser <
+s_greater >
+t_integer integer
+t_string string
+t_id int

@@ -19,7 +19,7 @@ class LexAnalyzer {
         vector<string> tokens;
 
         // other private methods
-    void UpdateVectors(string key, string token);
+    void UpdateVectors(string lexeme, string token);
     void PrintToOutput(ostream& outfile) const;
     public:
         LexAnalyzer(istream& infile);
