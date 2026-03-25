@@ -9,4 +9,10 @@ s_equal ==
 t_text 
 t_id bool
 t_number 123123
-t_id error
+t_id bruh
+t_number 1234
+t_id sds
+t_id x
+s_assign =
+t_number 10
+s_semi ;

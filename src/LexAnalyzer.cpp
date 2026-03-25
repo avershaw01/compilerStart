@@ -30,9 +30,9 @@ void LexAnalyzer::UpdateVectors(string lexeme, string token) {
 void LexAnalyzer::PrintToOutput(ostream &outfile,bool& errorFlag,string& errorMsg) const {
     for (size_t i = 0; i < tokens.size(); i++) {
         outfile << tokens[i] << " " << lexemes[i] << endl;
-        if (errorFlag) {
-            outfile << errorMsg << endl;
-        }
+    }
+    if (errorFlag) {
+        outfile << errorMsg << endl;
     }
 }
 
@@ -100,11 +100,10 @@ void LexAnalyzer::CheckString(int& i, string &line, string &lexeme, bool &errorF
             ch = line[i];
         }
 
-        if (ch != '"') {
+        if (ch != '"' && ch != '\0') {
             lexeme += ch;
             i++;
         }
-
 
     }
     UpdateVectors(lexeme, "t_text");
@@ -134,14 +133,16 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
             // Checks NUMBERS first:
             if (isdigit(ch)) {
                 lexeme += ch;
-                while (i < line.length() && isdigit(line[i+1])) {
-                    if (isalpha(line[i+1]) || line[i+1] == '_') {
-                        errorFlag = true;
-                        errorMsg = "No Delimiter Between number and words: " + line;
-                    }
+                while (i + 1 < line.length() && isdigit(line[i + 1]) && !errorFlag) {
                     lexeme += line[++i];
                 }
-                UpdateVectors(lexeme, "t_number");
+                if (i + 1 < line.length() && (isalpha(line[i + 1]) || line[i + 1] == '_')) {
+                    errorFlag = true;
+                    errorMsg = "No Delimiter Between number and words: " + line;
+                }
+                if (!errorFlag) {
+                    UpdateVectors(lexeme, "t_number");
+                }
             }
 
             // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
@@ -163,5 +164,9 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     }
     // If no errors ran return; pushes to output file what was read (using the parallel vectors)
     PrintToOutput(outfile,errorFlag,errorMsg);
-    cout << "It runs!" << endl; // DEBUG to console, ensures this section ran.
+
+    if (!errorFlag)
+        cout << "It runs!" << endl; // DEBUG to console, ensures this section ran.
+    else
+        cout << "Error -- " <<errorMsg << endl;
 }

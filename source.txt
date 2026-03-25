@@ -6,4 +6,7 @@ string
 int==
 ""
 bool
-123123error
+123123
+bruh
+1234 sds
+x = 10;
