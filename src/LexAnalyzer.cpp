@@ -29,7 +29,6 @@ LexAnalyzer::LexAnalyzer(istream &infile) {
     // Instantiate token and lexeme temp variables:
     string token;
     string lexeme;
-
     // Loops through lexemes.txt file, builds tokenmap
     while (infile >> token >> lexeme) {
         // cout << lexeme << " -> " << token << endl; // my DEBUG
@@ -58,16 +57,17 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
     string errorMsg;
 
     while (std::getline(infile, line)) {
-        int i = 0;
-
-        while (i < line.length() && !errorFlag) {
+        int length = line.length();
+        int i = -1;
+        while ((i++ < (int) line.length()) && !errorFlag) {
             // Instantiates temp variable to hold the lexeme
             string lexeme;
-            char ch = line[i++];
+            char ch = line[i];
 
             // Ignores whitespace
-            if (isspace(ch)) continue;
-
+            if (isspace(ch)) {
+                continue;
+            }
             // Checks NUMBERS first:
             if (isdigit(ch)) {
                 lexeme += ch;
@@ -85,13 +85,12 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
             // Now checking ALPHABET characters: (NOT a String, or else first char would be ")
             else if (isalpha(ch)) {
-                cout << "in isalpha" << endl;
                 // Variables cannot start with a number
                 lexeme += ch;
 
                 // isalnum returns true if the char is a number OR letter
-                while (isalnum(infile.peek()) || infile.peek() == '_') {
-                    infile.get(ch); // Reads next char, stores it in ch, moves reader to the next char.
+                while (i < line.length() && ( isalnum(line[i]) || line[i] == '_')) {
+                    ch = line[i++];
                     lexeme += ch;
                 }
 
@@ -106,7 +105,13 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
 
             // Checking for STRINGS (double quotes)
             else if (ch == '"') {
-                cout << "in isstring" << endl;
+                // checking for " midword
+                if (i > 0 && isalnum(line[i-1])) {
+                    errorFlag = true;
+                    errorMsg = "UNEXPECTED QUOTATION: " + line;
+                    continue;
+                }
+
                 // setting to non " so will pass while loop conditional
                 ch = '_';
                 // Only the data within the ""s is stored in the output file, "s are never added to the lexeme
@@ -142,15 +147,14 @@ void LexAnalyzer::scanFile(istream &infile, ostream &outfile) {
             else {
                 lexeme += ch;
 
-                if (infile.peek() != EOF) {
+                if (i + 1 < line.length()) {
                     // End of File
-                    char tempNext = infile.peek();
-                    string twoChars = lexeme + tempNext;
+                    string twoChars = lexeme + line[++i];
                     // twoChars variable is used to see if the pair is a valid symbol
 
                     if (tokenmap.count(twoChars)) {
-                        infile.get(ch);
                         lexeme = twoChars;
+                        i++;
                     }
                 }
                 if (tokenmap.count(lexeme)) {
